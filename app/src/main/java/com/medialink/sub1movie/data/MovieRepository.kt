@@ -1,6 +1,7 @@
 package com.medialink.sub1movie.data
 
 import android.util.Log
+import com.medialink.sub1movie.models.CastResponse
 import com.medialink.sub1movie.models.MovieResponse
 import com.medialink.sub1movie.network.ApiFactory
 import retrofit2.Call
@@ -32,6 +33,30 @@ class MovieRepository : MovieDataSource {
             }
 
         })
+    }
+
+    override fun retriveMovieCast(movidId: Int, callback: OperationCallback) {
+        ApiFactory.apiMovie.getCredit(movidId)
+            .enqueue(object : Callback<CastResponse> {
+                override fun onFailure(call: Call<CastResponse>, t: Throwable) {
+                    callback.onError(t.message)
+                }
+
+                override fun onResponse(
+                    call: Call<CastResponse>,
+                    response: Response<CastResponse>
+                ) {
+                    response.body()?.let {
+                        if (response.isSuccessful) {
+                            Log.i(TAG, "id ${it.id}")
+                            callback.onSuccess(it.cast)
+                        } else {
+                            callback.onError(response.body())
+                        }
+                    }
+                }
+
+            })
     }
 
     override fun cancel() {
