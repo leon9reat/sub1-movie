@@ -29,7 +29,7 @@ class MovieViewModel(private val repository: MovieDataSource) : ViewModel() {
     "loadMovies()" on constructor. Also, if you rotate the screen, the service will not be called.
      */
     init {
-        loadMovies()
+        //loadMovies()
     }
 
     fun loadMovies() {

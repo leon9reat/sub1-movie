@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -20,6 +19,7 @@ import kotlinx.android.synthetic.main.layout_error.*
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MovieViewModel
     private lateinit var adapter: MovieListAdapter
+    private var mListMovie = arrayListOf<Movie>()
 
     companion object {
         const val TAG = "CONSOLE"
@@ -38,6 +38,20 @@ class MainActivity : AppCompatActivity() {
 
         setupViewModel()
         setupUI()
+
+        if (savedInstanceState == null) {
+            viewModel.loadMovies()
+            Log.d(TAG, "load data")
+        } else {
+            mListMovie =
+                savedInstanceState.getParcelableArrayList<Movie>("STATE") as ArrayList<Movie>
+            Log.d(TAG, "save state")
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelableArrayList("STATE", mListMovie)
     }
 
     //ui
@@ -69,8 +83,8 @@ class MainActivity : AppCompatActivity() {
     private fun setupViewModel() {
         viewModel = ViewModelProviders.of(this, MovieModelFactory(Injection.provideRepository()))
             .get(MovieViewModel::class.java)
-        viewModel.movies.observe(this, renderMovies)
 
+        viewModel.movies.observe(this, renderMovies)
         viewModel.isViewLoading.observe(this, isViewLoadingObserver)
         viewModel.onMessageError.observe(this, onMessageErrorObserver)
         viewModel.isEmptyList.observe(this, emptyListObserver)
@@ -81,6 +95,8 @@ class MainActivity : AppCompatActivity() {
         layout_error.visibility = View.GONE
         layout_empty.visibility = View.GONE
         adapter.update(it)
+
+        mListMovie.addAll(it)
     }
 
     private val isViewLoadingObserver = Observer<Boolean> {
@@ -102,11 +118,6 @@ class MainActivity : AppCompatActivity() {
         layout_error.visibility = View.GONE
     }
 
-    //If you require updated data, you can call the method "loadMuseum" here
-    override fun onResume() {
-        super.onResume()
-        //viewModel.loadMovies()
-    }
 }
 
 

@@ -8,9 +8,9 @@
 
     <ImageView
         android:layout_width="100dp"
-        android:layout_height="130dp"
+        android:layout_height="100dp"
         android:id="@+id/img_cast"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
         tools:src="@drawable/ic_launcher_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
